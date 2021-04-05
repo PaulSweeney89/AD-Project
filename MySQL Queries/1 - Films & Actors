@@ -1,0 +1,9 @@
+#MySQL Query to Select Films & Actors
+
+SELECT f.FilmName, a.ActorName
+    FROM Film f
+INNER JOIN FilmCast fc
+    ON f.FilmID = fc.CastFilmID
+INNER JOIN Actor a
+    ON fc.CastActorID = a.ActorID
+ORDER BY f.FilmName

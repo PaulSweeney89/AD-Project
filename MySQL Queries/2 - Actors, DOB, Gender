@@ -1,0 +1,5 @@
+#MySQL Query to Select Actor, DOB, Gender
+
+SELECT ActorName, MONTHNAME(ActorDOB), ActorGender
+    FROM Actor
+WHERE YEAR(ActorDOB) = %s AND ActorGender = %s;
