@@ -1,6 +1,15 @@
 import program_mysql
 from tabulate import tabulate
 
+def get_id():
+	return input("ID : ")
+
+def get_countryname():
+	name = input("Name : ")
+	if name == "":
+		get_countryname()
+	return name
+
 def main():
 	"""
 	Main Python Program
@@ -15,20 +24,45 @@ def main():
 			print("-" * 5)
 
 			# output of get.films() query
-			films = (program_mysql.get_films())
-			print(tabulate(films[:5], tablefmt="simple"))
+			program_mysql.get_films()
 
 		elif (choice == "2"):
 			print("Actors")
 			print("-" * 5)
 
 			# Inputs
-			year = int(input("Year of Birth: "))
-			gender = str(input("Gender <Male/Female>: "))
+			year = input("Year of Birth: ")
+			gender = input("Gender <Male/Female> :")
 
-			actors = program_mysql.get_actor(year, gender)
-			print(tabulate(actors))
+			print("Actors")
+			print("-" * 5)
+			try:
+				actors = program_mysql.get_actor(year, gender)
+				print(tabulate(actors, tablefmt="simple"))
+			except:
+				print("Error")
 			
+		elif (choice == "3"):
+			print("Studios")
+			print("-" * 5)
+
+			# output of get.studios() query
+			studio = program_mysql.get_studios()
+			print(tabulate(studio, tablefmt="simple"))
+
+		elif (choice == "4"):
+			print("Add New Country")
+			print("-" * 14)
+
+			#inputs
+			while True:
+				try:
+					ID = int(get_id())
+					name = get_countryname()
+					program_mysql.add_country(ID, name)
+				except:
+					print("")
+
 		elif (choice == "x"):
 			# Exit Application
 			print()
