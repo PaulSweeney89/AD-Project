@@ -1,11 +1,5 @@
 import pymysql
-import tabulate
-
-conn = None
-
-def connect():
-	global conn
-	conn = pymysql.connect(host="localhost", user="root", password="root", db="MoviesDB", cursorclass=pymysql.cursors.DictCursor, port=3306)
+#import tabulate
 
 
 
@@ -13,9 +7,7 @@ def get_films():
 	"""
 	Function to view films & actors
 	"""
-	if (not conn):
-		connect();
-
+	db = pymysql.connect(host="localhost", user="root", password="root", db="MoviesDB", cursorclass=pymysql.cursors.DictCursor, port=3306)
 	query = """	SELECT f.FilmName, a.ActorName
     				FROM Film f
 				INNER JOIN FilmCast fc
@@ -25,10 +17,10 @@ def get_films():
 				ORDER BY f.FilmName, a.ActorName;
 			"""
 
-	with conn:
-		cursor = conn.cursor()
+	with db:
+		cursor = db.cursor()
 		cursor.execute(query)
-		conn.commit()
+		db.commit()
 
 		while True:
 			rows = cursor.fetchmany(5)
@@ -44,18 +36,17 @@ def get_actor(year, gender):
 	"""
 	Function to view actor, month of birth & gender
 	"""
-	if (not conn):
-		connect();
+	db = pymysql.connect(host="localhost", user="root", password="root", db="MoviesDB", cursorclass=pymysql.cursors.DictCursor, port=3306)
 
 	query = """	SELECT ActorName, MONTHNAME(ActorDOB), ActorGender
-    				FROM Actor
+					FROM Actor
 				WHERE YEAR(ActorDOB) = %s AND ActorGender = %s;
 			"""
 
-	with conn:
-		cursor = conn.cursor()
+	with db:
+		cursor = db.cursor()
 		cursor.execute(query, (year, gender))
-		conn.commit()
+		db.commit()
 		result = cursor.fetchall()
 
 		return result
@@ -66,15 +57,15 @@ def get_studios():
 	"""
 	Function to view studios
 	"""
-	if (not conn):
-		connect();
+	db = pymysql.connect(host="localhost", user="root", password="root", db="MoviesDB", cursorclass=pymysql.cursors.DictCursor, port=3306)
+
 
 	query = "SELECT * FROM Studio ORDER BY StudioID;"
 
-	with conn:
-		cursor = conn.cursor()
+	with db:
+		cursor = db.cursor()
 		cursor.execute(query)
-		conn.commit()
+		db.commit()
 		result = cursor.fetchall()
 
 		return result
@@ -85,19 +76,43 @@ def add_country(ID, name):
 	"""
 	Function to add a new country
 	"""
-	if (not conn):
-		connect();
+	db = pymysql.connect(host="localhost", user="root", password="root", db="MoviesDB", cursorclass=pymysql.cursors.DictCursor, port=3306)
 
 	query = """ INSERT INTO Country
 				(CountryID, CountryName)
 				VALUES (%s, %s)
 			"""
 
-	with conn:
+	with db:
 		try:
-			cursor = conn.cursor()
+			cursor = db.cursor()
 			cursor.execute(query, (ID, name))
-			conn.commit()
+			db.commit()
 			print("Country:", ID, name, "added to database")
 		except pymysql.err.IntegrityError:
 			print("*** Error ***: ID and/or Name <", ID, ",", name, "already exists")
+
+
+
+def get_filmsyn(ID):
+	"""
+	Function to retrieve Film Name & Synopsis with Film ID Input
+	"""
+	db = pymysql.connect(host="localhost", user="root", password="root", db="MoviesDB", cursorclass=pymysql.cursors.DictCursor, port=3306)
+	
+
+	query = """ SELECT FilmName, SUBSTRING(FilmSynopsis, 1, 30)
+				FROM Film
+				WHERE FilmID IN (%s)
+			"""
+
+	in_p=', '.join(list(map(lambda x: '%s', ID)))
+	query = query % in_p
+
+	with db:
+		cursor = db.cursor()
+		cursor.execute(query, (ID))
+		db.commit()
+		result = cursor.fetchall()
+
+		return result

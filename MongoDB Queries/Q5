@@ -1,0 +1,18 @@
+# MONGODB Function
+def find_subs(lang):
+	"""
+	Function to return 
+	"""
+	db = myclient["movieScriptsDB"]
+	docs = db["movieScripts"]
+
+	# query = {"subtitles":"English"}
+	query = {"subtitles":lang}
+
+	x = docs.find(query, (lang))
+	return x
+
+# MYSQL QUERY
+SELECT FilmName, SUBSTRING(FilmSynopsis, 1, 30)
+FROM Film
+WHERE FilmID IN (2, 218, 1, 57)

@@ -3,3 +3,4 @@
 SELECT ActorName, MONTHNAME(ActorDOB), ActorGender
     FROM Actor
 WHERE YEAR(ActorDOB) = %s AND ActorGender = %s;
+
