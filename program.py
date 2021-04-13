@@ -34,11 +34,11 @@ def get_id():
 	"""Function to prompt user to input Country / Film ID number """
 	while True:
 		try:
-			ID = int(input("ID : "))
+			id_num = int(input("ID : "))
 		except:
 			print("Please enter a valid ID")
 		else:
-			return ID 
+			return id_num
 
 
 
@@ -48,7 +48,7 @@ def get_countryname():
 		try:
 			name = input("Name : ")
 			if name == "":
-				raise Exception
+				raise Excemonption
 		except Exception:
 			print("Please enter a valid Country name")
 		else:
@@ -72,28 +72,26 @@ def get_lang():
 
 def get_keywords():
 	""" Function to prompt user to input movie script keywords """
+	key_words = []
 	while True:
-			key_words = []
-			word = input("Keyword <-1 to end> : ")
+		word = input("Keyword <-1 to end> : ")
+		if word != "-1":
 			key_words.append(word)
-			
-			if word == "-1":
-				break
-
+		else:
+			break
 	return key_words
 
 
 
 def get_sublang():
 	""" Function to prompt user to input movie script subtitle Language """
+	sub_lang = []
 	while True:
-			sub_lang = []
-			lang = input("Subtitle Language <-1 to end> : ")
+		lang = input("Subtitle Language <-1 to end> : ")
+		if lang != "-1":
 			sub_lang.append(lang)
-			
-			if lang == "-1":
-				break
-
+		else:
+			break
 	return sub_lang
 
 
@@ -145,10 +143,10 @@ def main():
 			print("Add New Country")						# Print Heading Text
 			print("-" * 14)
 
-			ID = int(get_id())								# Call input functions & assign to variables
+			id_num = int(get_id())								# Call input functions & assign to variables
 			name = get_countryname()						# Country ID & Country Name
 			
-			program_mysql.add_country(ID, name)				# Call add_country() function
+			program_mysql.add_country(id_num, name)				# Call add_country() function
 			app_display()									# re-Display Main Menu
 
 		# Choice 5 - View Movies with Subtitles
@@ -176,9 +174,15 @@ def main():
 			print("Add New Movie Script")					# Print Heading Text
 			print("-" * 20)
 
-			print(get_keywords())
-			print(get_sublang())
+			id_num = get_id()
+			key_words = get_keywords()
+			lang = get_sublang()
 
+			check = program_mysql.check_id(id_num)
+			if check == 1:
+				print("*** Error ***: Film with id:", id_num, "already exists")
+			else:
+				program_mongo.insert_script(id_num, key_words, lang)
 
 		# Choice x - Close Program
 		elif (choice == "x"):
@@ -204,7 +208,6 @@ def app_display():
 	print("5 - View Movie with Subtitles")
 	print("6 - Add New MovieScript")
 	print("x - Exit application")
-
 
 
 
